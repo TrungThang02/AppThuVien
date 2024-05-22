@@ -10,11 +10,16 @@ const Service = ({ navigation }) => {
     const [services, setServices] = useState([]);
     const { userInfo } = useContext(UserContext);
     const [filterServices, setfilterServices] = useState([]);
-
+    const [book, setBook] = useState([]);
+    const [detail, setDetail] = useState("");
+    const [author, setAuthor] = useState("");
+    const [imageUri, setImageUri] = useState(null);
+    const [publisher, setPublisher] = useState("");
+    const [categories, setCategories] = useState([]);
 
 
     useEffect(() => {
-        const unsubscribe = firestore().collection('services').onSnapshot((snapshot) => {
+        const unsubscribe = firestore().collection('books').onSnapshot((snapshot) => {
             const servicesData = snapshot.docs.map((doc) => ({
                 id: doc.id,
                 ...doc.data(),
@@ -26,32 +31,40 @@ const Service = ({ navigation }) => {
         return () => unsubscribe();
     }, []);
 
-    const handleDetails = (service) => {
+    const handleDetails = (book) => {
         navigation.navigate('DetailsService', {
-            serviceName: service.serviceName,
-            price: service.price,
-            imageUrl: service.imageUrl
+            bookName:book.bookName,
+            detail: book.detail,
+            author: book.author,
+            publisher: book.publisher,
+            imageUrl: book.imageUrl,
+            categoryName: book.categoryName,
+            count: book.count,
         });
     };
 
-    const handleEdit = (service) => {
-        navigation.navigate('EditService', { id: service.id });
-    };
+    const handleEdit = (book, categories) => {
+        navigation.navigate('EditService', { 
+          bookId: book.id, 
+          categories 
+        });
+      };
+      
 
     const handleDelete = async (service) => {
         try {
             Alert.alert(
                 '',
-                'Are you sure?',
+                'Bạn chắc chứ?',
                 [
                     {
-                        text: 'Cancel',
+                        text: 'Hủy',
                         style: 'cancel',
                     },
                     {
-                        text: 'Delete',
+                        text: 'Xóa',
                         onPress: async () => {
-                            await firestore().collection('services').doc(service.id).delete();
+                            await firestore().collection('books').doc(service.id).delete();
                         },
                         style: 'destructive',
                     },
@@ -73,7 +86,17 @@ const Service = ({ navigation }) => {
 
 
     return (
-        <View style={{backgroundColor:'#fff'}}>
+        <View style={{backgroundColor:'#fff', height:'100%'}}>
+             <View style={{flexDirection:'row', margin:5}}>
+           <TouchableOpacity 
+           style={{backgroundColor:'red', padding:15, width:'100%', alignItems: 'center', borderRadius:10}}
+           onPress={() => navigation.navigate("AddService")}>
+               <Text style={{ fontSize: 15, fontWeight: 'bold', color: '#fff' }}>
+                  Thêm mới sách
+               </Text>
+           </TouchableOpacity>
+     
+       </View>
             <View style={{ width: "95%", alignItems: 'center', alignSelf: 'center', margin: 10 }}>
                 <Searchbar
                     style={{
@@ -88,22 +111,7 @@ const Service = ({ navigation }) => {
                     onChangeText={handleSearch}
                 />
             </View>
-            <View style={styles.container}>
-
-                <View>
-
-                    <Text style={{ fontWeight: '600', color: 'black' }}>Danh sách dịch vụ</Text>
-
-                </View>
-
-                {/* {userInfo && userInfo.role === 'admin' ? ( */}
-                    <TouchableOpacity onPress={() => navigation.navigate('AddService')}>
-                        <Text>
-                            <Icon name="add-circle" size={45} style={{ color: 'red' }} />
-                        </Text>
-                    </TouchableOpacity>
-                {/* ) : null} */}
-            </View>
+           
             <ScrollView>
                 <FlatList
                     style={{ marginBottom: 150 }}
@@ -115,10 +123,10 @@ const Service = ({ navigation }) => {
                                 <TouchableOpacity onPress={() => handleDetails(item)}>
                                     <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                                         <View>
-                                            <Text style={{ fontSize: 17, fontWeight: 'bold', color: 'black' }}>{item.serviceName}</Text>
-                                            <Text style={{ fontSize: 12, fontWeight: 'bold', color: 'black' }}>{item.price + " vnđ"}</Text>
+                                            <Text style={{ fontSize: 17, fontWeight: 'bold', color: 'black' }}>{item.bookName}</Text>
+                                            <Text style={{ fontSize: 12, fontWeight: 'bold', color: 'black' }}>{item.publisher}</Text>
                                         </View>
-                                        {userInfo && userInfo.role === 'admin' && (
+                                     
                                             <View style={{ flexDirection: 'row' }}>
                                                 <Pressable onPress={() => handleEdit(item)}>
                                                     <View style={{ backgroundColor: 'green', padding: 10, borderRadius: 50, marginRight: 10 }}>
@@ -135,7 +143,7 @@ const Service = ({ navigation }) => {
                                                     </View>
                                                 </Pressable>
                                             </View>
-                                        )}
+                                       
                                     </View>
                                 </TouchableOpacity>
                             </View>
