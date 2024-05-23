@@ -45,14 +45,14 @@ const Setting = ({ navigation }) => {
   const handleLogout = () => {
     Alert.alert(
       '',
-      'Are you sure?',
+      'Bạn chắc chứ?',
       [
         {
-          text: 'Cancel',
+          text: 'Hủy',
           style: 'cancel',
         },
         {
-          text: 'Logout',
+          text: 'Đăng xuất',
           onPress: () => {
             logoutUser();
             navigation.navigate('Login');
@@ -109,7 +109,7 @@ const Setting = ({ navigation }) => {
               fontWeight: 'bold',
             }}
           >
-            Change Info
+            Thay đổi thông tin
           </Text>
         </Pressable>
         <Pressable
@@ -128,8 +128,9 @@ const Setting = ({ navigation }) => {
               fontSize: 18,
               fontWeight: 'bold',
             }}
+
           >
-            Reset password
+            Khôi phục mật khẩu
           </Text>
         </Pressable>
         <Pressable
@@ -149,7 +150,7 @@ const Setting = ({ navigation }) => {
               fontWeight: 'bold',
             }}
           >
-            Log out
+            Đăng xuất
           </Text>
         </Pressable>
       </View>

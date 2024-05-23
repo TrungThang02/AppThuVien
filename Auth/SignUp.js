@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, Alert, Pressable, Text } from 'react-native';
+import { View, StyleSheet, Alert, Pressable, Text, Image } from 'react-native';
 import { TextInput } from 'react-native-paper';
 import auth from '@react-native-firebase/auth';
 import { useNavigation } from '@react-navigation/native';
@@ -36,17 +36,27 @@ const SignUp = ({ navigation }) => {
   };
 
   return (
-    <View style={{ flex: 1, justifyContent: 'center', margin: 10, borderRadius: 20 }}>
+    
+       <View style={{ flex: 1, justifyContent: 'center', margin: 10, borderRadius: 20 }}>
+            <View style={{alignItems:'center'}}>
+            <Image
+                style={styles.tinyLogo}
+                source={{
+                    uri: 'https://www.louisvillelibrary.org/sites/default/files/Louisville%20Public%20Library%20Logo_0.png',
+                }}
+            />
+   </View>
+  
       <TextInput 
       style={styles.TextInput}
-      label="Email" 
+      label="Nhập Email" 
       value={email} 
       onChangeText={(email) => setEmail(email)} 
       underlineColor='transparent'
       />
       <TextInput
        style={styles.TextInput}
-        label="Password"
+        label="Nhập mật khẩu"
         value={pass}
         onChangeText={(pass) => setPass(pass)}
         secureTextEntry={!showPassword} 
@@ -55,7 +65,7 @@ const SignUp = ({ navigation }) => {
       />
       <TextInput
        style={styles.TextInput}
-        label="Password repeat"
+        label="Nhập lại mật khẩu"
         value={passrp}
         onChangeText={(passrp) => setPassrp(passrp)}
         secureTextEntry={!showPassword} 
@@ -64,25 +74,25 @@ const SignUp = ({ navigation }) => {
       />
        <View style={{justifyContent: 'center', padding: 10 }}>
                 <Pressable 
-                style={{backgroundColor: "red", 
+                style={{backgroundColor: "#2284ff", 
                 alignItems:'center',
                 padding: 15, 
                 borderRadius:10, 
         
                }}
             onPress={handleSignUp}>
-                  <Text style={{color: '#fff', fontSize: 18, fontWeight: 'bold'}}>SignUp</Text>
+                  <Text style={{color: '#fff', fontSize: 18, fontWeight: 'bold'}}>Đăng ký</Text>
                 </Pressable>
             </View>
             <View style={{justifyContent: 'center', padding: 10,paddingTop:0 }}>
                 <Pressable 
-                style={{backgroundColor: "red", 
+                style={{backgroundColor: "#2284ff", 
                 alignItems:'center',
                 padding: 15, 
                 borderRadius:10, 
             }}
             onPress={()=> navigation.navigate("Login")}>
-                   <Text style={{color: '#fff', fontSize: 18, fontWeight: 'bold'}}>SignIn</Text>
+                   <Text style={{color: '#fff', fontSize: 18, fontWeight: 'bold'}}>Đăng nhập</Text>
                 </Pressable>
                 </View>
     </View>
@@ -101,7 +111,12 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
   
     // borderWidth: 1,
-}
+},
+tinyLogo: {
+  width: '90%',
+  height:150,
+  marginBottom: 20,
+},
 });
 
 export default SignUp;
