@@ -40,6 +40,7 @@ const Service = ({ navigation }) => {
             imageUrl: book.imageUrl,
             categoryName: book.categoryName,
             count: book.count,
+            bookId: book.id, 
         });
     };
 
@@ -88,13 +89,15 @@ const Service = ({ navigation }) => {
     return (
         <View style={{backgroundColor:'#fff', height:'100%'}}>
              <View style={{flexDirection:'row', margin:5}}>
-           <TouchableOpacity 
-           style={{backgroundColor:'red', padding:15, width:'100%', alignItems: 'center', borderRadius:10}}
-           onPress={() => navigation.navigate("AddService")}>
-               <Text style={{ fontSize: 15, fontWeight: 'bold', color: '#fff' }}>
-                  Thêm mới sách
-               </Text>
-           </TouchableOpacity>
+          {userInfo && userInfo.role === 'admin'&&(
+             <TouchableOpacity 
+             style={{backgroundColor:'red', padding:15, width:'100%', alignItems: 'center', borderRadius:10}}
+             onPress={() => navigation.navigate("AddService")}>
+                 <Text style={{ fontSize: 15, fontWeight: 'bold', color: '#fff' }}>
+                    Thêm mới sách
+                 </Text>
+             </TouchableOpacity>
+          )}
      
        </View>
             <View style={{ width: "95%", alignItems: 'center', alignSelf: 'center', margin: 10 }}>
@@ -107,7 +110,7 @@ const Service = ({ navigation }) => {
                         height: 60,
                         justifyContent: 'center',
                     }}
-                    placeholder="Tim kiem..."
+                    placeholder="Tìm kiếm sách..."
                     onChangeText={handleSearch}
                 />
             </View>
@@ -118,16 +121,19 @@ const Service = ({ navigation }) => {
                     data={filterServices}
                     keyExtractor={(item) => item.id}
                     renderItem={({ item }) => (
-                        <View style={{ flexDirection: 'row', margin: 5 }}>
+                        <View style={{ flexDirection: 'row', margin: 10 }}>
                             <View style={styles.item}>
-                                <TouchableOpacity onPress={() => handleDetails(item)}>
-                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                                        <View>
+                                <TouchableOpacity 
+                                onPress={() => handleDetails(item)}>
+                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between'}}>
+                                        <View style={{padding:10}}>
                                             <Text style={{ fontSize: 17, fontWeight: 'bold', color: 'black' }}>{item.bookName}</Text>
                                             <Text style={{ fontSize: 12, fontWeight: 'bold', color: 'black' }}>{item.publisher}</Text>
                                         </View>
                                      
-                                            <View style={{ flexDirection: 'row' }}>
+                                          {
+                                           userInfo &&  userInfo.role === 'admin' &&(
+                                                <View style={{ flexDirection: 'row' }}>
                                                 <Pressable onPress={() => handleEdit(item)}>
                                                     <View style={{ backgroundColor: 'green', padding: 10, borderRadius: 50, marginRight: 10 }}>
                                                         <Text>
@@ -143,6 +149,8 @@ const Service = ({ navigation }) => {
                                                     </View>
                                                 </Pressable>
                                             </View>
+                                            )
+                                          }
                                        
                                     </View>
                                 </TouchableOpacity>
@@ -171,7 +179,8 @@ const styles = StyleSheet.create({
         height: 80,
         borderColor: 'gray',
         borderRadius: 10,
-        justifyContent: 'center'
+        justifyContent: 'center',
+        
     }
 });
 

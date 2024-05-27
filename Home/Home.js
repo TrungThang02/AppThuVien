@@ -1,30 +1,24 @@
 import 'react-native-gesture-handler';
-import React, { useState, useEffect } from 'react';
-import { View, Text, Pressable, StyleSheet } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
+import React, { useContext } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { createStackNavigator } from '@react-navigation/stack';
-import auth from '@react-native-firebase/auth';
-
-import SignUp from '../Auth/SignUp';
-import Login from '../Auth/Login';
-import { Home } from '../Home/Home';
-import Service from './Books';
-import AddService from './AddBook';
-import Logout from './Logout';
-import Setting from './Setting';
-import Orders from './Orders';
+import { UserContext } from '../context/UseContext';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import Service from './Books';
 import BookCategory from './BookCategory';
+import CheckOutOrReturn from './CheckOutOrReturn';
+import Orders from './Orders';
+import Setting from './Setting';
+import Login from '../Auth/Login';
 
 const Tab = createBottomTabNavigator();
-
 
 const getTabBarIcon = icon => ({ tintColor }) => (
   <Icon name={icon} size={26} style={{ color: "black" }} />
 );
 
 const MyTabs = () => {
+  const { userInfo } = useContext(UserContext);
+
   return (
     <Tab.Navigator
       initialRouteName='Service'
@@ -40,26 +34,39 @@ const MyTabs = () => {
           tabBarIcon: getTabBarIcon('house'),
         }}
       />
-         <Tab.Screen
-        name="Thể loại sách"
-        component={BookCategory}
-        options={{
-          tabBarIcon: getTabBarIcon('supervised-user-circle'),
-        }}
-      />
+      
+      {userInfo && userInfo.role === 'admin' && (
+        <Tab.Screen
+          name="Thể loại sách"
+          component={BookCategory}
+          options={{
+            tabBarIcon: getTabBarIcon('supervised-user-circle'),
+          }}
+        />
+      )}
+      {userInfo && userInfo.role !== 'admin' && (
+        <Tab.Screen
+          name="Mượn/Trả sách"
+          component={CheckOutOrReturn}
+          options={{
+            tabBarIcon: getTabBarIcon('pending'),
+          }}
+        />
+      )}
+      {userInfo && userInfo.role === 'admin' && (
+        <Tab.Screen
+          name="Duyệt"
+          component={Orders}
+          options={{
+            tabBarIcon: getTabBarIcon('offline-pin'),
+          }}
+        />
+      )}
       <Tab.Screen
-        name="Mượn/Trả sách"
-        component={Orders}
-        options={{
-          tabBarIcon: getTabBarIcon('attach-money'),
-        }}
-      />
-   
-      <Tab.Screen
-        name="Setting"
+        name="Cá nhân"
         component={Setting}
         options={{
-          tabBarIcon: getTabBarIcon('settings'),
+          tabBarIcon: getTabBarIcon('account-circle'),
         }}
       />
     </Tab.Navigator>

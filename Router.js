@@ -16,7 +16,7 @@ import ChangeInfo from './Home/ChangeInfo';
 import Info from './Home/Info';
 import Orders from './Home/Orders';
 import OrderDetails from './Home/OrderDetails';
-
+import CheckOutOrReturn from './Home/CheckOutOrReturn';
 
 const Stack = createStackNavigator();
 
@@ -36,6 +36,7 @@ const Router = ({ navigation }) => {
       <Stack.Screen name="Info" component={Info} />
       <Stack.Screen name="Orders" component={Orders} />
       <Stack.Screen name="OrdersDetails" component={OrderDetails} />
+      <Stack.Screen name="CheckOutOrReturn" component={CheckOutOrReturn} />
 
     </Stack.Navigator>
 
