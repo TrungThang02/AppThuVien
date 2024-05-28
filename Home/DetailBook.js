@@ -35,7 +35,7 @@ const DetailBook = ({ route, navigation }) => {
         email: userInfo.email,
         bookName: bookName,
         author: author,
-        borrowTime: borrowTime,
+        borrowTime: borrowTime.toLocaleDateString(),
         borrowCode: borrowCode,
       };
 
@@ -80,6 +80,9 @@ const DetailBook = ({ route, navigation }) => {
               border-top: 1px solid #ccc;
               padding-top: 20px;
             }
+            .text{
+              font-style: italic;
+            }
           </style>
         </head>
         <body>
@@ -93,6 +96,7 @@ const DetailBook = ({ route, navigation }) => {
               <p><span class="highlight">Thời gian mượn:</span> ${bookCheckout.borrowTime}</p>
               <p><span class="highlight">Code mượn sách:</span> ${bookCheckout.borrowCode}</p>
               <p><span class="highlight">Email:</span> ${bookCheckout.email}</p>
+              <p><span class="text">Đọc giả vui lòng đến thư viện để nhận sách trong thời gian sớm nhất. Xin cảm ơn!</span></p>
             </div>
           </div>
         </body>
@@ -160,7 +164,7 @@ const DetailBook = ({ route, navigation }) => {
                   email: userInfo.email,
                   bookName: bookName,
                   author: author,
-                  borrowTime: borrowTime,
+                  borrowTime: borrowTime.toLocaleDateString(),
                   borrowCode: borrowCode,
                   status: false,
                 });
