@@ -27,7 +27,7 @@ const Login = ({ navigation }) => {
     }
     return (
         <View style={{ flex: 1, justifyContent: 'center', margin: 10, borderRadius: 20 }}>
-            <View style={{alignItems:'center'}}>
+            <View style={{alignItems:'center', padding:10}}>
             <Image
                 style={styles.tinyLogo}
                 source={{
@@ -114,9 +114,10 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
     },
     tinyLogo: {
-        width: '90%',
-        height:150,
-        marginBottom: 20,
+        width: '70%',
+        height:100,
+        marginBottom: 30,
+
       },
 })
 

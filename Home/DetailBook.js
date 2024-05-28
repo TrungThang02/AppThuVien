@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, Image, StyleSheet, ScrollView, Alert } fr
 import { UserContext } from '../context/UseContext';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
+import axios from 'axios';
 
 const DetailBook = ({ route, navigation }) => {
   const { bookName, author, publisher, imageUrl, detail, categoryName, count, bookId } = route.params; // Assume bookId is passed as well
@@ -15,6 +16,100 @@ const DetailBook = ({ route, navigation }) => {
       result += characters.charAt(Math.floor(Math.random() * characters.length));
     }
     return result;
+  };
+
+   const formatDateTime = (date) => {
+    const pad = (num) => (num < 10 ? `0${num}` : num);
+    const day = pad(date.getDate());
+    const month = pad(date.getMonth() + 1); // Months are zero-based
+    const year = date.getFullYear();
+    const hours = pad(date.getHours());
+    const minutes = pad(date.getMinutes());
+    const seconds = pad(date.getSeconds());
+    return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
+  };
+
+  const sendAppointmentEmail = async (borrowTime, borrowCode) => {
+    try {
+      const bookCheckout = {
+        email: userInfo.email,
+        bookName: bookName,
+        author: author,
+        borrowTime: borrowTime,
+        borrowCode: borrowCode,
+      };
+
+      // Construct HTML content
+      const htmlContent = `
+        <html>
+        <head>
+          <style>
+            body {
+              font-family: Arial, sans-serif;
+              padding: 20px;
+              background-color: #f0f0f0;
+              color: #333;
+            }
+            .container {
+              max-width: 600px;
+              margin: 0 auto;
+              background-color: #fff;
+              border-radius: 10px;
+              box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            }
+            .content {
+              padding: 20px;
+            }
+            h1 {
+              font-size: 18px;
+              font-weight: bold;
+              margin-bottom: 20px;
+              color: #007bff;
+            }
+            p {
+              margin-bottom: 10px;
+              font-size: 16px;
+              line-height: 1.6;
+            }
+            .highlight {
+              font-weight: bold;
+              color: black;
+            }
+            .info {
+              margin-top: 20px;
+              border-top: 1px solid #ccc;
+              padding-top: 20px;
+            }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div style="padding: 10px; background:#bad5e4">
+              <h1 style="text-align:center;color:black">PHIẾU MƯỢN SÁCH THƯ VIỆN</h1>
+            </div>
+            <div class="content">
+              <p><span class="highlight">Tên Sách:</span> ${bookCheckout.bookName}</p>
+              <p><span class="highlight">Tác giả:</span> ${bookCheckout.author}</p>
+              <p><span class="highlight">Thời gian mượn:</span> ${bookCheckout.borrowTime}</p>
+              <p><span class="highlight">Code mượn sách:</span> ${bookCheckout.borrowCode}</p>
+              <p><span class="highlight">Email:</span> ${bookCheckout.email}</p>
+            </div>
+          </div>
+        </body>
+      </html>
+      `;
+
+      // Send email using axios
+      const response = await axios.post('http://192.168.209.218:3001/send-email', {
+        recipient: userInfo.email,
+        subject: 'Xác nhận thông tin đặt sách',
+        html: htmlContent,
+      });
+
+      console.log(response.data);
+    } catch (error) {
+      console.error('Error sending  email:', error);
+    }
   };
 
   const CheckOut = () => {
@@ -48,7 +143,6 @@ const DetailBook = ({ route, navigation }) => {
               const borrowCode = generateBorrowCode();
               const borrowTime = new Date();
 
-      
               await firestore().runTransaction(async (transaction) => {
                 const updatedBookDoc = await transaction.get(bookRef);
 
@@ -62,14 +156,13 @@ const DetailBook = ({ route, navigation }) => {
                   throw 'Không còn sách để mượn.';
                 }
 
-              
                 transaction.set(firestore().collection('checkout').doc(), {
                   email: userInfo.email,
                   bookName: bookName,
                   author: author,
                   borrowTime: borrowTime,
                   borrowCode: borrowCode,
-                  status: false
+                  status: false,
                 });
 
                 transaction.update(bookRef, {
@@ -77,6 +170,7 @@ const DetailBook = ({ route, navigation }) => {
                 });
               });
 
+              await sendAppointmentEmail(borrowTime, borrowCode);
               Alert.alert('Thành công', 'Bạn đã mượn sách thành công.');
             } catch (error) {
               console.error(error);

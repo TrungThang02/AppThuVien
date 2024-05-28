@@ -113,9 +113,10 @@ const styles = StyleSheet.create({
     // borderWidth: 1,
 },
 tinyLogo: {
-  width: '90%',
-  height:150,
-  marginBottom: 20,
+  width: '70%',
+  height:100,
+  marginBottom: 30,
+
 },
 });
 
