@@ -9,7 +9,7 @@ import CheckOutOrReturn from './CheckOutOrReturn';
 import Orders from './Orders';
 import Setting from './Setting';
 import Login from '../Auth/Login';
-
+import Approve from './Approve';
 const Tab = createBottomTabNavigator();
 
 const getTabBarIcon = icon => ({ tintColor }) => (
@@ -56,7 +56,7 @@ const MyTabs = () => {
       {userInfo && userInfo.role === 'admin' && (
         <Tab.Screen
           name="Duyệt"
-          component={Orders}
+          component={Approve}
           options={{
             tabBarIcon: getTabBarIcon('offline-pin'),
           }}

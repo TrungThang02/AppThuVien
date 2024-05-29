@@ -52,7 +52,7 @@ const Login = ({ navigation }) => {
                 right={<TextInput.Icon icon={showPassword ? 'eye' : 'eye-off'} onPress={toggleShowPassword} />}
             />
 
-            <View style={{ justifyContent: 'center', padding: 10 }}>
+            <View style={{ justifyContent: 'center', padding: 20, paddingTop:10, paddingBottom:10}}>
                 <Pressable
                     style={{
                         backgroundColor: "#2284ff",
@@ -86,7 +86,7 @@ const Login = ({ navigation }) => {
                      <Text style={{ color: '#fff', fontSize: 18, fontWeight: 'bold' }}>Sign In with Google</Text>
                 </Pressable> */}
             </View>
-            <View style={{ justifyContent: 'center', padding: 10, paddingTop: 0 }}>
+            <View style={{ justifyContent: 'center', padding: 20, paddingTop: 0 }}>
                 <Pressable
                     style={{
                         backgroundColor: "#2284ff",

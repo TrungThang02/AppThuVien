@@ -3,7 +3,7 @@ import { FlatList, Text, View, StyleSheet, ActivityIndicator, RefreshControl, To
 import firestore from '@react-native-firebase/firestore';
 import { UserContext } from '../context/UseContext';
 
-const CheckOutOrReturn = ({ navigation }) => {
+const Approve = ({ navigation }) => {
   const [checkouts, setCheckouts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -14,11 +14,15 @@ const CheckOutOrReturn = ({ navigation }) => {
   const fetchCheckouts = async () => {
     try {
       const checkoutData = [];
-      const snapshot = await firestore().collection('checkout').where('email', '==', userEmail).get();
-  
+      const snapshot = await firestore().collection('checkout').get();
+
       snapshot.forEach(doc => {
         const data = doc.data();
-        
+        let borrowTime = null;
+        if (data.borrowTime && typeof data.borrowTime.toDate === 'function') {
+          borrowTime = data.borrowTime.toDate();
+        }
+
         const checkoutInfo = {
           id: doc.id,
           email: data.email,
@@ -31,7 +35,7 @@ const CheckOutOrReturn = ({ navigation }) => {
         };
         checkoutData.push(checkoutInfo);
       });
-  
+
       setCheckouts(checkoutData);
     } catch (error) {
       console.error('Lỗi khi lấy thông tin mượn sách: ', error);
@@ -40,7 +44,7 @@ const CheckOutOrReturn = ({ navigation }) => {
       setRefreshing(false);
     }
   };
-  
+
   useEffect(() => {
     if (userEmail) {
       fetchCheckouts();
@@ -64,17 +68,37 @@ const CheckOutOrReturn = ({ navigation }) => {
     });
   };
 
-  const handleCancelBorrow = async (checkoutId, bookId) => {
-    try {
-      await firestore().collection('checkout').doc(checkoutId).delete();
-      await updateBookCount(bookId, 1);
-      fetchCheckouts();
-      Alert.alert('Thành công', 'Hủy mượn sách thành công.');
-    } catch (error) {
-      console.error('Lỗi khi hủy mượn sách: ', error);
-      Alert.alert('Lỗi', error.message || 'Hủy mượn sách thất bại.');
-    }
-  };
+  const handleApproveBorrow = async (checkoutId, bookId) => {
+    Alert.alert(
+      'Xác nhận',
+      'Bạn có chắc muốn duyệt trả sách này?',
+      [
+        {
+          text: 'Hủy',
+          onPress: () => console.log('Cancel Pressed'),
+          style: 'cancel'
+        },
+        {
+          text: 'Duyệt',
+          onPress: async () => {
+            try {
+                await firestore().collection('checkout').doc(checkoutId).update({ 
+                    status: 1,
+                  });
+              
+              Alert.alert('Thành công', 'Duyệt trả sách thành công.');
+              fetchCheckouts();
+            } catch (error) {
+              console.error('Lỗi khi duyệt trả sách: ', error);
+              Alert.alert('Lỗi', error.message || 'Duyệt trả sách thất bại.');
+            }
+          }
+        }
+      ],
+      { cancelable: false }
+    );
+};
+
 
   const handleReturnBook = async (checkoutId, bookId) => {
     Alert.alert(
@@ -89,19 +113,19 @@ const CheckOutOrReturn = ({ navigation }) => {
         {
           text: 'Trả',
           onPress: async () => {
-            setReturningBookId(checkoutId);
+            setReturningBookId(checkoutId); 
             try {
               await firestore().collection('checkout').doc(checkoutId).update({ 
-                status: 2,
+                status: 3,
               });
               await updateBookCount(bookId, 1);
+              Alert.alert('Thành công', 'Trả sách thành công.');
               fetchCheckouts();
-              Alert.alert('Thành công', 'Gửi yêu cầu trả sách thành công.');
             } catch (error) {
               console.error('Lỗi khi trả sách: ', error);
               Alert.alert('Lỗi', error.message || 'Trả sách thất bại.');
             } finally {
-              setReturningBookId(null);
+              setReturningBookId(null); 
             }
           }
         }
@@ -109,39 +133,52 @@ const CheckOutOrReturn = ({ navigation }) => {
       { cancelable: false }
     );
   };
+  
 
   const renderItem = ({ item }) => (
     <View style={styles.itemContainer}>
       <Text style={styles.text}>Tên sách: {item.bookName}</Text>
       <Text style={styles.text}>Tác giả: {item.author}</Text>
-      <Text style={styles.text}>Thời gian mượn: {item.borrowTime}</Text>
-      <Text style={styles.text}>Mã mượn: {item.borrowCode}</Text>
+      <Text style={styles.text}>Thời gian mượn: {item.borrowTime.toLocaleString()}</Text>
+      <Text style={styles.text}>Mã mượn sách: {item.borrowCode}</Text>
+      <Text style={styles.text}>Tài khoản mượn: {item.email}</Text>
       {item.status === 0 ? (
         <TouchableOpacity
           style={styles.button}
-          onPress={() => handleCancelBorrow(item.id, item.bookId)}
+          onPress={() => handleApproveBorrow(item.id, item.bookId)}
           disabled={returningBookId === item.id} 
         >
-          <Text style={styles.buttonText}>Hủy mượn sách</Text>
+          <Text style={styles.buttonText}>Duyệt mượn sách</Text>
         </TouchableOpacity>
       ) : item.status === 1 ? (
         <TouchableOpacity
           onPress={() => handleReturnBook(item.id, item.bookId)}
           style={[styles.button, {backgroundColor: "#4CAF50"}]}
+          disabled={true} 
+        >
+          <Text style={styles.buttonText}>Đã duyệt mượn</Text>
+        </TouchableOpacity>
+      ) : item.status === 2 ? (
+        <TouchableOpacity
+        onPress={() => handleReturnBook(item.id, item.bookId)}
+          style={[styles.button]}
           disabled={returningBookId === item.id} 
         >
-          <Text style={styles.buttonText}>Trả sách</Text>
+          <Text style={styles.buttonText}>Đang chờ duyệt trả sách</Text>
         </TouchableOpacity>
       ) : (
         <TouchableOpacity
           style={[styles.button, {backgroundColor: "#4CAF50"}]}
           disabled={true} 
         >
-          <Text style={styles.buttonText}>Đang chờ duyệt trả sách</Text>
+          <Text style={styles.buttonText}>Hoàn thành trả sách</Text>
         </TouchableOpacity>
       )}
     </View>
   );
+  
+  
+  
 
   if (loading) {
     return (
@@ -208,4 +245,4 @@ const styles = StyleSheet.create({
 });
 
 
-export default CheckOutOrReturn;
+export default Approve;

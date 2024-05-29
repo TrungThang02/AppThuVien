@@ -2,11 +2,10 @@ import React, { useContext } from 'react';
 import { View, Text, TouchableOpacity, Image, StyleSheet, ScrollView, Alert } from 'react-native';
 import { UserContext } from '../context/UseContext';
 import firestore from '@react-native-firebase/firestore';
-import auth from '@react-native-firebase/auth';
 import axios from 'axios';
 
 const DetailBook = ({ route, navigation }) => {
-  const { bookName, author, publisher, imageUrl, detail, categoryName, count, bookId } = route.params; // Assume bookId is passed as well
+  const { bookName, author, publisher, imageUrl, detail, categoryName, count, bookId } = route.params;
   const { userInfo } = useContext(UserContext);
 
   const generateBorrowCode = () => {
@@ -18,10 +17,10 @@ const DetailBook = ({ route, navigation }) => {
     return result;
   };
 
-   const formatDateTime = (date) => {
+  const formatDateTime = (date) => {
     const pad = (num) => (num < 10 ? `0${num}` : num);
     const day = pad(date.getDate());
-    const month = pad(date.getMonth() + 1); // Months are zero-based
+    const month = pad(date.getMonth() + 1);
     const year = date.getFullYear();
     const hours = pad(date.getHours());
     const minutes = pad(date.getMinutes());
@@ -39,7 +38,6 @@ const DetailBook = ({ route, navigation }) => {
         borrowCode: borrowCode,
       };
 
-      // Construct HTML content
       const htmlContent = `
         <html>
         <head>
@@ -103,8 +101,7 @@ const DetailBook = ({ route, navigation }) => {
       </html>
       `;
 
-      // Send email using axios
-      const response = await axios.post('http://192.168.209.218:3001/send-email', {
+      const response = await axios.post('http://192.168.1.4:3001/send-email', {
         recipient: userInfo.email,
         subject: 'Xác nhận thông tin đặt sách',
         html: htmlContent,
@@ -112,79 +109,111 @@ const DetailBook = ({ route, navigation }) => {
 
       console.log(response.data);
     } catch (error) {
-      console.error('Error sending  email:', error);
+      console.error('Error sending email:', error);
     }
   };
 
-  const CheckOut = () => {
-    Alert.alert(
-      'Xác nhận mượn sách',
-      'Bạn có chắc chắn muốn mượn cuốn sách này không?',
-      [
-        {
-          text: 'Hủy',
-          style: 'cancel',
-        },
-        {
-          text: 'Mượn',
-          onPress: async () => {
-            try {
-              const bookRef = firestore().collection('books').doc(bookId);
-              const bookDoc = await bookRef.get();
+  const checkBorrowedStatus = async () => {
+    try {
+      const borrowedBooksRef = firestore().collection('checkout')
+        .where('email', '==', userInfo.email)
+        .where('bookId', '==', bookId)
+        .where('status', '!=', 3);
 
-              if (!bookDoc.exists) {
-                Alert.alert('Lỗi', 'Cuốn sách không tồn tại.');
-                return;
-              }
+      const borrowedBooks = await borrowedBooksRef.get();
 
-              const currentCount = bookDoc.data().count;
+      if (!borrowedBooks.empty) {
+        Alert.alert('Lỗi', 'Bạn đã mượn cuốn sách này và chưa trả lại.');
+        return true;
+      }
 
-              if (currentCount <= 0) {
-                Alert.alert('Lỗi', 'Không còn sách để mượn.');
-                return;
-              }
+      return false;
+    } catch (error) {
+      if (error.code === 'firestore/not-found') {
+        console.log('Collection does not exist. Bypassing status check.');
+        return false;
+      } else {
+        console.error('Error checking borrowed status:', error);
+        return true; // Trả về true để ngăn chặn việc mượn sách nếu có lỗi xảy ra
+      }
+    }
+  };
 
-              const borrowCode = generateBorrowCode();
-              const borrowTime = new Date();
+  const CheckOut = async () => {
+    const hasBorrowedBook = await checkBorrowedStatus();
 
-              await firestore().runTransaction(async (transaction) => {
-                const updatedBookDoc = await transaction.get(bookRef);
-
-                if (!updatedBookDoc.exists) {
-                  throw 'Cuốn sách không tồn tại.';
-                }
-
-                const updatedCount = updatedBookDoc.data().count;
-
-                if (updatedCount <= 0) {
-                  throw 'Không còn sách để mượn.';
-                }
-
-                transaction.set(firestore().collection('checkout').doc(), {
-                  email: userInfo.email,
-                  bookName: bookName,
-                  author: author,
-                  borrowTime: borrowTime.toLocaleDateString(),
-                  borrowCode: borrowCode,
-                  status: false,
-                });
-
-                transaction.update(bookRef, {
-                  count: updatedCount - 1,
-                });
-              });
-
-              await sendAppointmentEmail(borrowTime, borrowCode);
-              Alert.alert('Thành công', 'Bạn đã mượn sách thành công.');
-            } catch (error) {
-              console.error(error);
-              Alert.alert('Lỗi', `Đã xảy ra lỗi khi mượn sách: ${error}`);
-            }
+    if (hasBorrowedBook === false) {
+      // Nếu chưa có sách được mượn, tiếp tục quá trình mượn sách
+      Alert.alert(
+        'Xác nhận mượn sách',
+        'Bạn có chắc chắn muốn mượn cuốn sách này không?',
+        [
+          {
+            text: 'Hủy',
+            style: 'cancel',
           },
-        },
-      ],
-      { cancelable: false }
-    );
+          {
+            text: 'Mượn',
+            onPress: async () => {
+              try {
+                const bookRef = firestore().collection('books').doc(bookId);
+                const bookDoc = await bookRef.get();
+
+                if (!bookDoc.exists) {
+                  Alert.alert('Lỗi', 'Cuốn sách không tồn tại.');
+                  return;
+                }
+
+                const currentCount = bookDoc.data().count;
+
+                if (currentCount <= 0) {
+                  Alert.alert('Lỗi', 'Không còn sách để mượn.');
+                  return;
+                }
+
+                const borrowCode = generateBorrowCode();
+                const borrowTime = new Date();
+
+                await firestore().runTransaction(async (transaction) => {
+                  const updatedBookDoc = await transaction.get(bookRef);
+
+                  if (!updatedBookDoc.exists) {
+                    throw 'Cuốn sách không tồn tại.';
+                  }
+
+                  const updatedCount = updatedBookDoc.data().count;
+
+                  if (updatedCount <= 0) {
+                    throw 'Không còn sách để mượn.';
+                  }
+
+                  transaction.set(firestore().collection('checkout').doc(), {
+                    email: userInfo.email,
+                    bookName: bookName,
+                    author: author,
+                    borrowTime: borrowTime.toLocaleDateString(),
+                    borrowCode: borrowCode,
+                    status: 0,
+                    bookId: bookId,
+                  });
+
+                  transaction.update(bookRef, {
+                    count: updatedCount - 1,
+                  });
+                });
+
+                await sendAppointmentEmail(borrowTime, borrowCode);
+                Alert.alert('Thành công', 'Bạn đã mượn sách thành công.');
+              } catch (error) {
+                console.error(error);
+                Alert.alert('Lỗi', `Đã xảy ra lỗi khi mượn sách: ${error}`);
+              }
+            },  
+          },
+        ],
+        { cancelable: false }
+      );
+    }
   };
 
   return (

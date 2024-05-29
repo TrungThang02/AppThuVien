@@ -72,7 +72,7 @@ const SignUp = ({ navigation }) => {
         right={<TextInput.Icon icon={showPassword ? 'eye' : 'eye-off'} onPress={toggleShowPassword}/>}
         underlineColor='transparent'
       />
-       <View style={{justifyContent: 'center', padding: 10 }}>
+       <View style={{ justifyContent: 'center', padding: 20, paddingTop:0, paddingBottom:10}}>
                 <Pressable 
                 style={{backgroundColor: "#2284ff", 
                 alignItems:'center',
@@ -84,7 +84,7 @@ const SignUp = ({ navigation }) => {
                   <Text style={{color: '#fff', fontSize: 18, fontWeight: 'bold'}}>Đăng ký</Text>
                 </Pressable>
             </View>
-            <View style={{justifyContent: 'center', padding: 10,paddingTop:0 }}>
+            <View style={{ justifyContent: 'center', padding: 20, paddingTop:0, paddingBottom:10}}>
                 <Pressable 
                 style={{backgroundColor: "#2284ff", 
                 alignItems:'center',
@@ -107,7 +107,7 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 10,
     borderBottomLeftRadius: 10,
     borderBottomRightRadius: 10,
-    marginBottom: 5,
+    marginBottom: 10,
     backgroundColor: 'white',
   
     // borderWidth: 1,

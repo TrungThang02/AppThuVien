@@ -92,7 +92,7 @@ const Setting = ({ navigation }) => {
         </View>
       </Pressable>
       <View style={{ padding: 10 }}>
-        <Pressable
+        {/* <Pressable
           onPress={handleEdit}
           style={{
             backgroundColor: 'red',
@@ -111,7 +111,7 @@ const Setting = ({ navigation }) => {
           >
             Thay đổi thông tin
           </Text>
-        </Pressable>
+        </Pressable> */}
         <Pressable
           onPress={handleReset}
           style={{
