@@ -9,7 +9,6 @@ import Login from './Auth/Login';
 import Home from './Home/Home';
 import Router from './Router';
 import AddService from './Home/AddBook';
-import Logout from './Home/Logout';
 import Service from './Home/Books';
 import { UserProvider } from './context/UseContext';
 

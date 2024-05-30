@@ -11,11 +11,7 @@ import Service from './Home/Books';
 import AddService from './Home/AddBook';
 import DetailService from './Home/DetailBook';
 import EditService from './Home/EditBook';
-import Logout from './Home/Logout';
-import ChangeInfo from './Home/ChangeInfo';
-import Info from './Home/Info';
-import Orders from './Home/Orders';
-import OrderDetails from './Home/OrderDetails';
+
 import CheckOutOrReturn from './Home/CheckOutOrReturn';
 import Approve from './Home/Approve';
 
@@ -31,12 +27,7 @@ const Router = ({ navigation }) => {
       <Stack.Screen name="AddService" component={AddService} options={{ title: "Thêm sách" }}  />
       <Stack.Screen name="DetailsService" component={DetailService} options={{ title: "Chi tiết sách" }}  />
       <Stack.Screen name="EditService" component={EditService} options={{ title: "Chỉnh sửa sách" }}  />
-      <Stack.Screen name="Logout" component={Logout} options={{ headerShown: false }} />
       <Stack.Screen name="SignUp" component={SignUp} options={{ headerShown: false }} />
-      <Stack.Screen name="ChangeInfo" component={ChangeInfo} />
-      <Stack.Screen name="Info" component={Info} />
-      <Stack.Screen name="Orders" component={Orders} />
-      <Stack.Screen name="OrdersDetails" component={OrderDetails} />
       <Stack.Screen name="CheckOutOrReturn" component={CheckOutOrReturn} />
       <Stack.Screen name="Approve" component={Approve} />
 

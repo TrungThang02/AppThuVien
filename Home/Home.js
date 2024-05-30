@@ -6,9 +6,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import Service from './Books';
 import BookCategory from './BookCategory';
 import CheckOutOrReturn from './CheckOutOrReturn';
-import Orders from './Orders';
 import Setting from './Setting';
-import Login from '../Auth/Login';
 import Approve from './Approve';
 const Tab = createBottomTabNavigator();
 
