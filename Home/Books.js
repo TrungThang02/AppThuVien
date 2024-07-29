@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { View, StyleSheet, Text, TouchableOpacity, FlatList, Pressable, Alert } from 'react-native';
+import { View, StyleSheet, Text, TouchableOpacity, FlatList, Pressable, Alert, Image } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import { Searchbar } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -89,15 +89,7 @@ const Service = ({ navigation }) => {
     return (
         <View style={{backgroundColor:'#fff', height:'100%'}}>
              <View style={{flexDirection:'row', margin:5}}>
-          {userInfo && userInfo.role === 'admin'&&(
-             <TouchableOpacity 
-             style={{backgroundColor:'red', padding:15, width:'100%', alignItems: 'center', borderRadius:10}}
-             onPress={() => navigation.navigate("AddService")}>
-                 <Text style={{ fontSize: 15, fontWeight: 'bold', color: '#fff' }}>
-                    Thêm mới sách
-                 </Text>
-             </TouchableOpacity>
-          )}
+         
      
        </View>
             <View style={{ width: "95%", alignItems: 'center', alignSelf: 'center', margin: 10 }}>
@@ -126,28 +118,20 @@ const Service = ({ navigation }) => {
                                 <TouchableOpacity 
                                 onPress={() => handleDetails(item)}>
                                     <View style={{ flexDirection: 'row', justifyContent: 'space-between'}}>
+                                    <View>
+                                    <Image source={{ uri: item.imageUrl }} style={styles.image} />
+                                        </View>
                                         <View style={{padding:10}}>
-                                            <Text style={{ fontSize: 17, fontWeight: 'bold', color: 'black' }}>{item.bookName}</Text>
-                                            <Text style={{ fontSize: 12, fontWeight: 'bold', color: 'black' }}>{item.publisher}</Text>
+                                            <Text style={{ fontSize: 17, fontWeight: 'bold', color: 'black' }}>Tên sách: {item.bookName}</Text>
+                                            <Text style={{ fontSize: 12, fontWeight: 'bold', color: 'black' }}>Nhà xuất bản: {item.publisher}</Text>
+                                            <Text style={{ fontSize: 12, fontWeight: 'bold', color: 'black' }}>Số lượng: {item.count}</Text>
                                         </View>
                                      
                                           {
                                            userInfo &&  userInfo.role === 'admin' &&(
                                                 <View style={{ flexDirection: 'row' }}>
-                                                <Pressable onPress={() => handleEdit(item)}>
-                                                    <View style={{ backgroundColor: 'green', padding: 10, borderRadius: 50, marginRight: 10 }}>
-                                                        <Text>
-                                                            <Icon name="edit" size={20} style={{ color: 'white' }} />
-                                                        </Text>
-                                                    </View>
-                                                </Pressable>
-                                                <Pressable onPress={() => handleDelete(item)}>
-                                                    <View style={{ backgroundColor: 'red', padding: 10, borderRadius: 50 }}>
-                                                        <Text>
-                                                            <Icon name="delete" size={20} style={{ color: 'white' }} />
-                                                        </Text>
-                                                    </View>
-                                                </Pressable>
+                                                
+                                                
                                             </View>
                                             )
                                           }
@@ -175,13 +159,20 @@ const styles = StyleSheet.create({
     item: {
         width: '100%',
         borderWidth: 1,
-        padding: 10,
-        height: 80,
+      
+        height: 160,
         borderColor: 'gray',
         borderRadius: 10,
         justifyContent: 'center',
         
-    }
+    },
+    image: {
+        width:150,
+        height: 140,
+        borderRadius: 10,
+        marginLeft:10
+      
+      },
 });
 
 export default Service;
