@@ -235,11 +235,11 @@ const DetailBook = ({ route, navigation }) => {
 
       <Image source={{ uri: imageUrl }} style={styles.image} />
 
-      {userInfo && userInfo.role !== 'admin' && (
+     
         <TouchableOpacity onPress={CheckOut} style={styles.button}>
           <Text style={styles.buttonText}>Mượn sách</Text>
         </TouchableOpacity>
-      )}
+      
     </ScrollView>
   );
 };

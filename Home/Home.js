@@ -26,23 +26,15 @@ const MyTabs = () => {
       inactiveColor={{ color: "red" }}
     >
       <Tab.Screen
-        name="Quản lý sách"
+        name="E-Library"
         component={Service}
         options={{
           tabBarIcon: getTabBarIcon('house'),
         }}
       />
       
-      {userInfo && userInfo.role === 'admin' && (
-        <Tab.Screen
-          name="Thể loại sách"
-          component={BookCategory}
-          options={{
-            tabBarIcon: getTabBarIcon('supervised-user-circle'),
-          }}
-        />
-      )}
-      {userInfo && userInfo.role !== 'admin' && (
+      
+     
         <Tab.Screen
           name="Mượn/Trả sách"
           component={CheckOutOrReturn}
@@ -50,16 +42,8 @@ const MyTabs = () => {
             tabBarIcon: getTabBarIcon('pending'),
           }}
         />
-      )}
-      {userInfo && userInfo.role === 'admin' && (
-        <Tab.Screen
-          name="Duyệt"
-          component={Approve}
-          options={{
-            tabBarIcon: getTabBarIcon('offline-pin'),
-          }}
-        />
-      )}
+     
+     
       <Tab.Screen
         name="Cá nhân"
         component={Setting}

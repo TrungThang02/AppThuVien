@@ -1,22 +1,13 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { View, StyleSheet, Text, TouchableOpacity, FlatList, Pressable, Alert, Image } from 'react-native';
+import { View, StyleSheet, Text, TouchableOpacity, FlatList, Image, ScrollView } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import { Searchbar } from 'react-native-paper';
-import Icon from 'react-native-vector-icons/MaterialIcons';
-import { ScrollView } from 'react-native-virtualized-view'
-import { UserProvider, UserContext } from '../context/UseContext';
-
+import { UserContext } from '../context/UseContext';
+import Slider from '../components/Slider';
 const Service = ({ navigation }) => {
     const [services, setServices] = useState([]);
     const { userInfo } = useContext(UserContext);
     const [filterServices, setfilterServices] = useState([]);
-    const [book, setBook] = useState([]);
-    const [detail, setDetail] = useState("");
-    const [author, setAuthor] = useState("");
-    const [imageUri, setImageUri] = useState(null);
-    const [publisher, setPublisher] = useState("");
-    const [categories, setCategories] = useState([]);
-
 
     useEffect(() => {
         const unsubscribe = firestore().collection('books').onSnapshot((snapshot) => {
@@ -33,146 +24,153 @@ const Service = ({ navigation }) => {
 
     const handleDetails = (book) => {
         navigation.navigate('DetailsService', {
-            bookName:book.bookName,
+            bookName: book.bookName,
             detail: book.detail,
             author: book.author,
             publisher: book.publisher,
             imageUrl: book.imageUrl,
             categoryName: book.categoryName,
             count: book.count,
-            bookId: book.id, 
+            bookId: book.id,
         });
     };
 
-    const handleEdit = (book, categories) => {
-        navigation.navigate('EditService', { 
-          bookId: book.id, 
-          categories 
-        });
-      };
-      
-
-    const handleDelete = async (service) => {
-        try {
-            Alert.alert(
-                '',
-                'Bạn chắc chứ?',
-                [
-                    {
-                        text: 'Hủy',
-                        style: 'cancel',
-                    },
-                    {
-                        text: 'Xóa',
-                        onPress: async () => {
-                            await firestore().collection('books').doc(service.id).delete();
-                        },
-                        style: 'destructive',
-                    },
-                ],
-                { cancelable: false }
-            );
-        } catch (error) {
-            console.error('Error deleting service: ', error);
-            Alert.alert('Error', 'An error occurred while deleting the service');
-        }
+    const truncateText = (text, limit) => {
+        if (text.length <= limit) return text;
+        return text.substring(0, limit) + '...';
     };
 
     const handleSearch = (query) => {
         const filterData = services.filter((service) =>
-            service.serviceName.toLowerCase().includes(query.toLowerCase())
+            service.bookName.toLowerCase().includes(query.toLowerCase())
         );
         setfilterServices(filterData);
     };
 
-
     return (
-        <View style={{backgroundColor:'#fff', height:'100%'}}>
-             <View style={{flexDirection:'row', margin:5}}>
-         
-     
-       </View>
-            <View style={{ width: "95%", alignItems: 'center', alignSelf: 'center', margin: 10 }}>
+      
+        <View style={{ backgroundColor: 'white', height: '100%' }}>
+         <View style={{ width: "95%", alignItems: 'center', alignSelf: 'center', margin: 10, }}>
                 <Searchbar
-                    style={{
-                        ...styles.item,
-                        padding: 2,
-                        backgroundColor: 'transparent',
-                        margin: 0,
-                        height: 60,
-                        justifyContent: 'center',
-                    }}
+                    style={styles.searchbar}
                     placeholder="Tìm kiếm sách..."
                     onChangeText={handleSearch}
                 />
             </View>
+
+         
            
             <ScrollView>
-                <FlatList
-                    style={{ marginBottom: 150 }}
-                    data={filterServices}
-                    keyExtractor={(item) => item.id}
-                    renderItem={({ item }) => (
-                        <View style={{ flexDirection: 'row', margin: 10 }}>
-                            <View style={styles.item}>
-                                <TouchableOpacity 
-                                onPress={() => handleDetails(item)}>
-                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between'}}>
-                                    <View>
+            <Slider></Slider>
+                <View>
+                    <Text style={styles.textheader}>Sách mới cập nhật</Text>
+                    <FlatList
+                        data={filterServices}
+                        horizontal
+                        keyExtractor={(item) => item.id}
+                        renderItem={({ item }) => (
+                            <View style={styles.itemContainer}>
+                                <TouchableOpacity onPress={() => handleDetails(item)} style={styles.item}>
                                     <Image source={{ uri: item.imageUrl }} style={styles.image} />
-                                        </View>
-                                        <View style={{padding:10}}>
-                                            <Text style={{ fontSize: 17, fontWeight: 'bold', color: 'black' }}>Tên sách: {item.bookName}</Text>
-                                            <Text style={{ fontSize: 12, fontWeight: 'bold', color: 'black' }}>Nhà xuất bản: {item.publisher}</Text>
-                                            <Text style={{ fontSize: 12, fontWeight: 'bold', color: 'black' }}>Số lượng: {item.count}</Text>
-                                        </View>
-                                     
-                                          {
-                                           userInfo &&  userInfo.role === 'admin' &&(
-                                                <View style={{ flexDirection: 'row' }}>
-                                                
-                                                
-                                            </View>
-                                            )
-                                          }
-                                       
-                                    </View>
+                                    <Text style={styles.bookName}>{truncateText(item.bookName, 30)}</Text>
                                 </TouchableOpacity>
                             </View>
-                        </View>
-                    )}
-                />
+                        )}
+                        showsHorizontalScrollIndicator={false}
+                        contentContainerStyle={styles.flatListContainer}
+                    />
+                </View>
+
+                <View>
+                    <Text style={styles.textheader}>Sách đọc nhiều</Text>
+                    <FlatList
+                        data={filterServices}
+                        horizontal
+                        keyExtractor={(item) => item.id}
+                        renderItem={({ item }) => (
+                            <View style={styles.itemContainer}>
+                                <TouchableOpacity onPress={() => handleDetails(item)} style={styles.item}>
+                                    <Image source={{ uri: item.imageUrl }} style={styles.image} />
+                                    <Text style={styles.bookName}>{truncateText(item.bookName, 30)}</Text>
+                                </TouchableOpacity>
+                            </View>
+                        )}
+                        showsHorizontalScrollIndicator={false}
+                        contentContainerStyle={styles.flatListContainer}
+                    />
+                </View>
+
+                <View>
+                    <Text style={styles.textheader}>Sách mượn nhiều</Text>
+                    <FlatList
+                        data={filterServices}
+                        horizontal
+                        keyExtractor={(item) => item.id}
+                        renderItem={({ item }) => (
+                            <View style={styles.itemContainer}>
+                                <TouchableOpacity onPress={() => handleDetails(item)} style={styles.item}>
+                                    <Image source={{ uri: item.imageUrl }} style={styles.image} />
+                                    <Text style={styles.bookName}>{truncateText(item.bookName, 30)}</Text>
+                                </TouchableOpacity>
+                            </View>
+                        )}
+                        showsHorizontalScrollIndicator={false}
+                        contentContainerStyle={styles.flatListContainer}
+                    />
+                </View>
             </ScrollView>
         </View>
     );
 };
 
 const styles = StyleSheet.create({
-    container: {
-       
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        padding: 10,
-       
+    searchbar: {
+        padding: 2,
+        backgroundColor: 'transparent',
+        margin: 0,
+        height: 60,
+        justifyContent: 'center',
+        elevation: 20,
+    shadowColor: '#52006A',
+    
 
+        
+    },
+    flatListContainer: {
+        paddingHorizontal: 10,
+    },
+    itemContainer: {
+        width: 120,
+        marginHorizontal: 5,
     },
     item: {
-        width: '100%',
-        borderWidth: 1,
-      
-        height: 160,
         borderColor: 'gray',
         borderRadius: 10,
         justifyContent: 'center',
-        
+        alignItems: 'center',
+        padding: 5,
+        height: 250,
     },
     image: {
-        width:150,
-        height: 140,
+        width: '100%',
+        height: 150,
         borderRadius: 10,
-        marginLeft:10
-      
-      },
+        
+    },
+    bookName: {
+        height:80,
+        marginTop: 10,
+        fontSize: 15,
+        textAlign: 'center',
+        color: 'black',
+    },
+    textheader: {
+        padding: 10,
+        marginLeft: 10,
+        fontSize: 16,
+        color: 'black',
+        fontWeight: 'bold',
+    },
 });
 
 export default Service;
