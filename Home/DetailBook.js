@@ -208,7 +208,7 @@ const DetailBook = ({ route, navigation }) => {
                 console.error(error);
                 Alert.alert('Lỗi', `Đã xảy ra lỗi khi mượn sách: ${error}`);
               }
-            },  
+            },
           },
         ],
         { cancelable: false }
@@ -218,6 +218,7 @@ const DetailBook = ({ route, navigation }) => {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
+      <Image source={{ uri: imageUrl }} style={styles.image} />
       <View style={styles.infoContainer}>
         <Text style={styles.title}>Tên sách:</Text>
         <Text style={styles.text}>{bookName}</Text>
@@ -232,14 +233,9 @@ const DetailBook = ({ route, navigation }) => {
         <Text style={styles.title}>Số lượng sách:</Text>
         <Text style={styles.text}>{count + " " + "cuốn"}</Text>
       </View>
-
-      <Image source={{ uri: imageUrl }} style={styles.image} />
-
-     
-        <TouchableOpacity onPress={CheckOut} style={styles.button}>
-          <Text style={styles.buttonText}>Mượn sách</Text>
-        </TouchableOpacity>
-      
+      <TouchableOpacity onPress={CheckOut} style={styles.button}>
+        <Text style={styles.buttonText}>Mượn sách</Text>
+      </TouchableOpacity>
     </ScrollView>
   );
 };
@@ -249,6 +245,12 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     backgroundColor: '#fff',
     padding: 20,
+  },
+  image: {
+    width: '100%',
+    height: 300,
+    borderRadius: 10,
+    marginBottom: 20,
   },
   infoContainer: {
     marginBottom: 20,
@@ -263,12 +265,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#555',
     marginBottom: 10,
-  },
-  image: {
-    width: '100%',
-    height: 200,
-    borderRadius: 10,
-    marginBottom: 20,
   },
   button: {
     backgroundColor: "#f44336",

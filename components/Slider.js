@@ -1,47 +1,39 @@
 import React from 'react';
-import Carousel from 'react-native-banner-carousel';
-import { StyleSheet, Image, View, Dimensions } from 'react-native';
+import { StyleSheet, View, Dimensions } from 'react-native';
+import { ImageSlider } from 'react-native-image-slider-banner';
 
-const BannerWidth = Dimensions.get('window').width;
-const BannerHeight = 260;
+const { width } = Dimensions.get('window');
 
-const images = [
-    "https://visio.edu.vn/wp-content/uploads/2021/10/Banner-sa%CC%81ch_1920_tinified.jpg",
-    "https://png.pngtree.com/thumb_back/fh260/back_our/20190620/ourmid/pngtree-cartoon-dream-reading-life-change-poster-background-material-image_151816.jpg",
-    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRiiGFWwr8I7Fbfut-23g5mCStood_uUZU3Mw&s"
-];
-
-export default class Slider extends React.Component {
-    renderPage(image, index) {
-        return (
-            <View key={index}>
-                <Image style={{ width: BannerWidth, height: BannerHeight }} source={{ uri: image }} />
-            </View>
-        );
-    }
-
-    render() {
-        return (
-            <View style={styles.container}>
-                <Carousel
-                
-                    autoplay
-                    autoplayTimeout={5000}
-                    loop
-                    index={0}
-                    pageSize={BannerWidth}
-                >
-                    {images.map((image, index) => this.renderPage(image, index))}
-                </Carousel>
-            </View>
-        );
-    }
-}
+const Slider = () => {
+    return (
+        <View style={styles.container}>
+            <ImageSlider
+                data={[
+                    { img: 'https://visio.edu.vn/wp-content/uploads/2021/10/Banner-sa%CC%81ch_1920_tinified.jpg' },
+                    { img: 'https://thumbs.dreamstime.com/b/environment-earth-day-hands-trees-growing-seedlings-bokeh-green-background-female-hand-holding-tree-nature-field-gra-130247647.jpg' },
+                    { img: 'https://cdn.pixabay.com/photo/2015/04/19/08/32/marguerite-729510__340.jpg' }
+                ]}
+                autoPlay={true}
+                onItemChanged={(item) => (item)}
+                closeIconColor="#fff"
+                preview={false}
+                caroselImageStyle={styles.image}
+            />
+        </View>
+    );
+};
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#fff',
-        justifyContent: 'center'
+        justifyContent: 'center',
+        alignItems: 'center'
     },
+    image: {
+        width: width,
+        height: 220, 
+        resizeMode: 'cover'
+    }
 });
+
+export default Slider;

@@ -4,6 +4,7 @@ import firestore from '@react-native-firebase/firestore';
 import { Searchbar } from 'react-native-paper';
 import { UserContext } from '../context/UseContext';
 import Slider from '../components/Slider';
+import Search from '../components/Search';
 const Service = ({ navigation }) => {
     const [services, setServices] = useState([]);
     const { userInfo } = useContext(UserContext);
@@ -40,22 +41,13 @@ const Service = ({ navigation }) => {
         return text.substring(0, limit) + '...';
     };
 
-    const handleSearch = (query) => {
-        const filterData = services.filter((service) =>
-            service.bookName.toLowerCase().includes(query.toLowerCase())
-        );
-        setfilterServices(filterData);
-    };
+
 
     return (
       
         <View style={{ backgroundColor: 'white', height: '100%' }}>
          <View style={{ width: "95%", alignItems: 'center', alignSelf: 'center', margin: 10, }}>
-                <Searchbar
-                    style={styles.searchbar}
-                    placeholder="Tìm kiếm sách..."
-                    onChangeText={handleSearch}
-                />
+               <Search></Search>
             </View>
 
          
@@ -124,18 +116,7 @@ const Service = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-    searchbar: {
-        padding: 2,
-        backgroundColor: 'transparent',
-        margin: 0,
-        height: 60,
-        justifyContent: 'center',
-        elevation: 20,
-    shadowColor: '#52006A',
-    
-
-        
-    },
+  
     flatListContainer: {
         paddingHorizontal: 10,
     },
