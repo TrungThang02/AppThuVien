@@ -3,7 +3,7 @@ import React, { useContext } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { UserContext } from '../context/UseContext';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import Service from './Books';
+import Books from './Books';
 import BookCategory from './BookCategory';
 import CheckOutOrReturn from './CheckOutOrReturn';
 import Setting from './Setting';
@@ -19,15 +19,15 @@ const MyTabs = () => {
 
   return (
     <Tab.Navigator
-      initialRouteName='Service'
+      initialRouteName='Books'
       barStyle={{ backgroundColor: "red" }}
       labeled={false}
       activeTintColor={{ color: "red" }}
       inactiveColor={{ color: "red" }}
     >
       <Tab.Screen
-        name="E-Library"
-        component={Service}
+        name="T"
+        component={Books}
         options={{
           tabBarIcon: getTabBarIcon('house'),
         }}
@@ -35,14 +35,14 @@ const MyTabs = () => {
       
       
      
-        <Tab.Screen
+        {/* <Tab.Screen
           name="Mượn/Trả sách"
           component={CheckOutOrReturn}
           options={{
             tabBarIcon: getTabBarIcon('pending'),
           }}
         />
-     
+      */}
      
       <Tab.Screen
         name="Cá nhân"

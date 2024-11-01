@@ -1,18 +1,17 @@
 import React, { useState, useContext } from 'react';
-import { View, StyleSheet, Alert, Pressable, Text, Image, Modal } from 'react-native';
-import { TextInput, Button } from 'react-native-paper';
+import { View, StyleSheet, Alert, Image } from 'react-native';
+import { Input, Button, Icon, Text } from '@rneui/themed';
 import auth from '@react-native-firebase/auth';
-
 import { UserContext } from '../context/UseContext';
+
+import logo from '../assets/tdmulogo.jpg';
 
 const Login = ({ navigation }) => {
     const [email, setEmail] = useState("");
     const [pass, setPass] = useState("");
     const [showPassword, setShowPassword] = useState(false);
-    const [modalVisible, setModalVisible] = useState(false);
-    const [resetEmail, setResetEmail] = useState("");
 
-    const { loginUser} = useContext(UserContext);
+    const { loginUser } = useContext(UserContext);
 
     const toggleShowPassword = () => {
         setShowPassword(!showPassword);
@@ -27,177 +26,146 @@ const Login = ({ navigation }) => {
                     navigation.navigate("Home");
                 })
                 .catch(error => {
-                    Alert.alert("Lỗi", error);
+                    Alert.alert("Lỗi", error.message);
                 });
         } else {
             Alert.alert("", "Vui lòng nhập email và mật khẩu!");
         }
     };
 
-    const handleResetPassword = (email) => {
-        auth().sendPasswordResetEmail(email)
-            .then(() => {
-                Alert.alert("Thông báo", "Gửi mail khôi phục thành công");
-                setModalVisible(false);
-            })
-            .catch(error => {
-                Alert.alert("Error", error.message);
-            });
-    };
-
     return (
-        <View style={{ flex: 1, justifyContent: 'center', margin: 10, borderRadius: 20 }}>
-            <View style={{ alignItems: 'center', padding: 10 }}>
+        <View style={styles.container}>
+            <View style={styles.imageContainer}>
                 <Image
-                    style={styles.tinyLogo}
-                    source={{ uri: 'https://www.louisvillelibrary.org/sites/default/files/Louisville%20Public%20Library%20Logo_0.png' }}
+                    style={styles.logo}
+                    source={logo}
+                />
+                <Text style={styles.title}>THƯ VIỆN SỐ ĐẠI HỌC THỦ DẦU MỘT</Text>
+            </View>
+
+
+            <View style={styles.formContainer}>
+            <View style={styles.bgform}>
+
+                <Input
+                    placeholder="Nhập vào Email"
+                    value={email}
+                    onChangeText={setEmail}
+                    leftIcon={{ type: 'font-awesome', name: 'envelope',color: 'white' }}
+                    containerStyle={styles.inputContainer}
+                    inputStyle={styles.input}
+                    placeholderTextColor="white"
+      
+     
+                />
+                <Input
+                    placeholder="Nhập vào Password"
+                    value={pass}
+                    onChangeText={setPass}
+                    secureTextEntry={!showPassword}
+                    leftIcon={{ type: 'font-awesome', name: 'lock',color: 'white' }}
+                    placeholderTextColor="white"
+                    rightIcon={
+                        <Icon
+                            type='font-awesome'
+                            name={showPassword ? 'eye' : 'eye-slash'}
+                            onPress={toggleShowPassword}
+                        />
+                    }
+                    containerStyle={styles.inputContainer}
+                    inputStyle={styles.input}
+                />
+                <Button
+                    title="Đăng nhập"
+                    onPress={handleLogin}
+                    buttonStyle={styles.loginButton}
+                    titleStyle={styles.buttonTitle}
+                />
+                <Button
+                    title="Đăng ký"
+                    onPress={() => navigation.navigate("SignUp")}
+                    buttonStyle={styles.signupButton}
+                    titleStyle={styles.buttonTitle}
+                    containerStyle={styles.buttonContainer}
                 />
             </View>
-            <TextInput
-                style={{ ...styles.TextInput, margin: 10, borderRadius: 10 }}
-                label="Nhập vào Email"
-                value={email}
-                underlineColor="transparent"
-                onChangeText={email => setEmail(email)}
-            />
-            <TextInput
-                style={{ ...styles.TextInput, margin: 10, borderRadius: 10 }}
-                label="Nhập vào Password"
-                value={pass}
-                underlineColor="transparent"
-                onChangeText={pass => setPass(pass)}
-                secureTextEntry={!showPassword}
-                right={<TextInput.Icon icon={showPassword ? 'eye' : 'eye-off'} onPress={toggleShowPassword} />}
-            />
-            <View style={{ justifyContent: 'center', padding: 20, paddingTop: 10, paddingBottom: 10 }}>
-                <Pressable
-                    style={{
-                        backgroundColor: "#2284ff",
-                        alignItems: 'center',
-                        padding: 15,
-                        borderRadius: 10,
-                    }}
-                    onPress={handleLogin}>
-                    <Text style={{ color: '#fff', fontSize: 18, fontWeight: 'bold' }}>Đăng nhập</Text>
-                </Pressable>
-            </View>
-            <View style={{ justifyContent: 'center', padding: 20, paddingTop: 0 }}>
-                <Pressable
-                    style={{
-                        backgroundColor: "#2284ff",
-                        alignItems: 'center',
-                        padding: 15,
-                        borderRadius: 10,
-                    }}
-                    onPress={() => navigation.navigate("SignUp")}>
-                    <Text style={{ color: '#fff', fontSize: 18, fontWeight: 'bold' }}>Đăng ký</Text>
-                </Pressable>
-                <Pressable
-                    style={{
-                        alignItems: 'center',
-                        padding: 15,
-                        borderRadius: 10,
-                    }}
-                    onPress={() => setModalVisible(true)}>
-                    <Text style={{ color: '#2284ff', fontSize: 18, fontWeight: 'bold' }}>Quên mật khẩu</Text>
-                </Pressable>
-            </View>
-
-            <ForgotPasswordModal
-                visible={modalVisible}
-                onClose={() => setModalVisible(false)}
-                onResetPassword={handleResetPassword}
-            />
         </View>
+    </View>
     );
 }
 
-const ForgotPasswordModal = ({ visible, onClose, onResetPassword }) => {
-    const [email, setEmail] = useState('');
-
-    const handleResetPassword = () => {
-        onResetPassword(email);
-    };
-
-    return (
-        <Modal
-            transparent={true}
-            animationType="slide"
-            visible={visible}
-            onRequestClose={onClose}
-        >
-            <View style={styles.modalContainer}>
-                <View style={styles.modalView}>
-                    <Text style={styles.modalText}>Nhập vào email tài khoản</Text>
-                    <TextInput
-                        style={{ ...styles.TextInput, width: 250, backgroundColor: '#f3f3f3' }}
-                        label="Email"
-                        value={email}
-                        underlineColor="transparent"
-                        onChangeText={setEmail}
-                    />
-                    <Pressable
-                        style={{
-                            backgroundColor: "#2284ff",
-                            alignItems: 'center',
-                            padding: 10,
-                            borderRadius: 10,
-                            width: 250,
-                            marginTop: 2,
-                        }}
-                        onPress={handleResetPassword}>
-                        <Text style={{ color: '#fff', fontSize: 15, fontWeight: 'bold' }}>Gửi yêu cầu</Text>
-                    </Pressable>
-                    <Pressable
-                        style={{
-                            backgroundColor: "red",
-                            alignItems: 'center',
-                            padding: 10,
-                            borderRadius: 10,
-                            width: 250,
-                            marginTop: 2,
-                        }}
-                        onPress={onClose}>
-                        <Text style={{ color: '#fff', fontSize: 15, fontWeight: 'bold' }}>Đóng</Text>
-                    </Pressable>
-                </View>
-            </View>
-        </Modal>
-    );
-};
 const styles = StyleSheet.create({
-    TextInput: {
-        width: 350,
-        alignSelf: 'center',
-        borderTopLeftRadius: 10,
-        borderTopRightRadius: 10,
-        borderBottomLeftRadius: 10,
-        borderBottomRightRadius: 10,
-        marginBottom: 5,
+    container: {
+        flex: 1,
         backgroundColor: 'white',
     },
-    tinyLogo: {
-        width: '70%',
-        height: 100,
-        marginBottom: 30,
-    },
-    modalContainer: {
+    imageContainer: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
     },
-    modalView: {
-        width: 300,
-        padding: 20,
-        backgroundColor: 'white',
-        borderRadius: 10,
-        alignItems: 'center',
+    logo: {
+        width: '80%',
+        height: 250,
+        resizeMode: 'contain',
+        marginBottom: 0,
     },
-    modalText: {
-        marginBottom: 10,
+    title: {
         fontSize: 18,
         fontWeight: 'bold',
+        textAlign: 'center',
+       
+    },
+    formContainer: {
+        flex: 1,
+        justifyContent: 'center',
+
+      
+
+        backgroundColor: '#007bff', 
+        borderRadius: 30,
+        borderBottomEndRadius:0, 
+        borderBottomStartRadius:0, 
+        shadowColor: '#333',
+        shadowOffset: {
+            width: 1,
+            height: 4,
+        },
+        shadowOpacity: 0.7,
+        shadowRadius: 4,
+        elevation: 8, 
+    },
+    bgform:{
+        marginHorizontal: 30, 
+        marginBottom:10
+        
+    },
+    inputContainer: {
+        marginBottom: 15,
+        color: 'white',
+    },
+    input: {
+        fontSize: 16,
+        color: 'white',
+      
+    },
+    loginButton: {
+        backgroundColor: "#2284ff",
+        borderRadius: 10,
+        paddingVertical: 15,
+        marginBottom: 10,
+    },
+    signupButton: {
+        backgroundColor: "#4CAF50",
+        borderRadius: 10,
+        paddingVertical: 15,
+    },
+    buttonTitle: {
+        fontSize: 18,
+        fontWeight: 'bold',
+    },
+    buttonContainer: {
+        marginTop: 10,
     },
 });
 

@@ -45,14 +45,14 @@ const Book = ({ navigation }) => {
 
     return (
         <View style={{ backgroundColor: 'white', height: '100%' }}>
-            <View style={{ width: "95%", alignItems: 'center', alignSelf: 'center', margin: 10 }}>
+            {/* <View style={{ width: "95%", alignItems: 'center', alignSelf: 'center', margin: 10 }}>
                 <Search />
-            </View>
+            </View> */}
 
             <ScrollView>
                 <Slider />
 
-                <View style={styles.categories}>
+                {/* <View style={styles.categories}>
                     <TouchableOpacity style={styles.categoryButton}>
                         <Text style={styles.categoryText}>Thể loại</Text>
                     </TouchableOpacity>
@@ -65,7 +65,7 @@ const Book = ({ navigation }) => {
                     <TouchableOpacity style={styles.categoryButton}>
                         <Text style={styles.categoryText}>Tin tức</Text>
                     </TouchableOpacity>
-                </View>
+                </View> */}
 
                 <View style={styles.headerContainer}>
                     <Text style={styles.textheader}>Sách mới cập nhật</Text>

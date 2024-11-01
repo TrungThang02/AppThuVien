@@ -23,7 +23,7 @@ const Router = ({ navigation }) => {
     <Stack.Navigator>
       <Stack.Screen name="Login" component={Login} options={{ headerShown: false }} />
       <Stack.Screen name="Home" component={Home} options={{ headerShown: false }} />
-      <Stack.Screen name="Book" component={Book} />
+      <Stack.Screen name="Book" component={Book} options={{ headerShown: false }} />
       <Stack.Screen name="AddBook" component={AddBook} options={{ title: "Thêm sách" }}  />
       <Stack.Screen name="DetailsBook" component={DetailBook} options={{ title: "Chi tiết sách" }}  />
       <Stack.Screen name="EditBook" component={EditBook} options={{ title: "Chỉnh sửa sách" }}  />
